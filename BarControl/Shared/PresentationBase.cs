@@ -23,7 +23,7 @@ namespace BarControl.Shared
             }
             catch (FormatException)
             {
-                ColorfulMessage("\nThis is not a validy ID!", ConsoleColor.Red);
+                ColorfulMessage("\nThis is not a validy ID!\n", ConsoleColor.Red);
                 SetFooter();
                 GetInputId();
                 return 0;
@@ -55,8 +55,8 @@ namespace BarControl.Shared
                 return;
             }
 
-            ColorfulMessage($"\n{entityName} suscessfully created!", ConsoleColor.Green);
             repository.Add(entity);
+            ColorfulMessage($"\n{entityName} suscessfully created!", ConsoleColor.Green);
 
             SetFooter();
         }
@@ -84,12 +84,12 @@ namespace BarControl.Shared
 
             DisplayTable();
 
-            int id = GetInputId();
-            repository.isValidId(id);
+            int getId = GetInputId();
+            int validId = repository.isValidId(getId);
 
             EntityBase newRecord = GetRecordProperties();
+            repository.UpdateData(validId, newRecord);
             ColorfulMessage($"\n{entityName} suscessfully updated!", ConsoleColor.Green);
-            repository.UpdateData(id, newRecord);
             SetFooter();
         }
 
@@ -104,11 +104,11 @@ namespace BarControl.Shared
 
             DisplayTable();
 
-            int id = GetInputId();
-            repository.isValidId(id);
+            int getId = GetInputId();
+            int validId = repository.isValidId(getId);
 
+            repository.Remove(validId);
             ColorfulMessage($"\n{entityName} suscessfully deleted!", ConsoleColor.Green);
-            repository.Remove(id);
             SetFooter();
         }
 
@@ -218,7 +218,7 @@ namespace BarControl.Shared
             }
             catch (FormatException)
             {
-                ColorfulMessage($"\nInvalid input. Please enter a valid {typeof(Type).Name}.", ConsoleColor.Red);
+                ColorfulMessage($"\nInvalid input. Please enter a valid {typeof(Type).Name}.\n", ConsoleColor.Red);
                 return SetField<Type>(message, color);
             }
         }
