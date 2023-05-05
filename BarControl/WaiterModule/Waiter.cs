@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace BarControl.WaiterModule
 {
-    internal class Waiter : EntityBase
+    internal class Waiter : EntityBase<Waiter>
     {
         public string Name { get; set; }
         public string Cpf { get; set; }
@@ -19,14 +19,12 @@ namespace BarControl.WaiterModule
             Address = address;
         }
 
-        public override void UpdateData(EntityBase record)
+        public override void UpdateData(Waiter updateWaiter)
         {
-            Waiter waiter = (Waiter)record;
-
-            Name = waiter.Name;
-            Cpf = waiter.Cpf;
-            Phone = waiter.Phone;
-            Address = waiter.Address;
+            Name = updateWaiter.Name;
+            Cpf = updateWaiter.Cpf;
+            Phone = updateWaiter.Phone;
+            Address = updateWaiter.Address;
         }
 
         public override ArrayList Errors()

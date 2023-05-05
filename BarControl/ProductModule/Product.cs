@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace BarControl.ProductModule
 {
-    internal class Product : EntityBase
+    internal class Product : EntityBase<Product>
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -17,13 +17,11 @@ namespace BarControl.ProductModule
             Price = price;
         }
 
-        public override void UpdateData(EntityBase record)
+        public override void UpdateData(Product updateProduct)
         {
-            Product product = (Product)record;
-
-            Name = product.Name;
-            Description = product.Description;       
-            Price = product.Price;
+            Name = updateProduct.Name;
+            Description = updateProduct.Description;       
+            Price = updateProduct.Price;
         }
 
         public override ArrayList Errors()

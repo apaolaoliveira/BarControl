@@ -3,11 +3,11 @@ using System.Collections;
 
 namespace BarControl.TableModule
 {
-    internal class TableRepository : RepositoryBase
+    internal class TableRepository : RepositoryBase<Table>
     {
-        public TableRepository(ArrayList arrayList)
+        public TableRepository(List<Table> tableList)
         {
-            records = arrayList;
+            records = tableList;
         }
     }
 }

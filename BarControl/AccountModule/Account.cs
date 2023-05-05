@@ -1,12 +1,11 @@
 ﻿using BarControl.TableModule;
-using BarControl.ProductModule;
 using BarControl.WaiterModule;
 using BarControl.Shared;
 using System.Collections;
 
 namespace BarControl.AccountModule
 {
-    internal class Account : EntityBase
+    internal class Account : EntityBase<Account>
     {
         private AccountRepository repository = null;
         private Order order = null;
@@ -39,7 +38,7 @@ namespace BarControl.AccountModule
         {
             totalDayPrice = 0;
 
-            ArrayList record = repository.GetRecords();
+            List<Account> record = repository.GetRecords();
 
             foreach (Account account in record)
             {
@@ -49,14 +48,12 @@ namespace BarControl.AccountModule
             return totalDayPrice;
         }
 
-        public override void UpdateData(EntityBase record)
+        public override void UpdateData(Account updateAccount)
         {
-            Account account= (Account)record;
-
-            Table.id = account.Table.id;
-            Waiter.id = account.Waiter.id;   
-            Order = account.Order;
-            Status = account.Status;
+            Table.id = updateAccount.Table.id;
+            Waiter.id = updateAccount.Waiter.id;   
+            Order = updateAccount.Order;
+            Status = updateAccount.Status;
         }
 
         public override ArrayList Errors()

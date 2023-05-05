@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace BarControl.TableModule
 {
-    internal class Table : EntityBase
+    internal class Table : EntityBase<Table>
     {
         public string Description { get; set; }
 
@@ -13,11 +13,9 @@ namespace BarControl.TableModule
             Description = description;
         }
 
-        public override void UpdateData(EntityBase record)
+        public override void UpdateData(Table updateTable)
         {
-            Table table = (Table)record;
-
-            Description = table.Description;
+            Description = updateTable.Description;
         }
 
         public override ArrayList Errors()

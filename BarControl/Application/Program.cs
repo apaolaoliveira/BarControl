@@ -2,8 +2,6 @@
 using BarControl.WaiterModule;
 using BarControl.AccountModule;
 using BarControl.TableModule;
-using BarControl.Shared;
-using System.Collections;
 
 namespace BarControl.Application
 {
@@ -11,40 +9,59 @@ namespace BarControl.Application
     {
         static void Main(string[] args)
         {
-            Product productEntity = new Product(1, "Beer", "Drink", 20);
-            ProductRepository productRepository     = new ProductRepository(new ArrayList());
-            productRepository.Add(productEntity);
+            // Object initialization --------------------------------------------------------------------------------
+            ProductRepository productRepository   = new ProductRepository(new List<Product>());
             ProductPresentation productPresentation = new ProductPresentation(productRepository);
-            ProductPresentation product = productPresentation;
 
-            Waiter waiterEntity = new Waiter(1, "Gary", "12236548955", 49999885665, "Street: 123 Main Street; Neighborhood: Downtown");
-            WaiterRepository waiterRepository     = new WaiterRepository(new ArrayList());
-            waiterRepository.Add(waiterEntity);
+            WaiterRepository   waiterRepository   = new WaiterRepository(new List<Waiter>());
             WaiterPresentation waiterPresentation = new WaiterPresentation(waiterRepository);
-            WaiterPresentation waiter = waiterPresentation;
 
-            Table tableEntity = new Table(1, "Next to the window of front door");
-            TableRepository   tableRepository   = new TableRepository(new ArrayList());
-            tableRepository.Add(tableEntity);
+            TableRepository   tableRepository   = new TableRepository(new List<Table>());
             TablePresentation tablePresentation = new TablePresentation(tableRepository);
-            TablePresentation table = tablePresentation;
 
             Order orderEntity = new Order();
-            AccountRepository accountRepository = new AccountRepository(new ArrayList());
+
+            AccountRepository accountRepository = new AccountRepository(new List<Account>());
             Account accountEntity = new Account(accountRepository, orderEntity);
-            AccountPresentation accountPresentation = new AccountPresentation(accountRepository,
-                                                      tablePresentation, productPresentation, waiterPresentation,
-                                                      tableRepository, productRepository, waiterRepository, accountEntity, orderEntity);
+            AccountPresentation accountPresentation = new AccountPresentation
+            (accountRepository, tablePresentation, productPresentation, waiterPresentation,
+             tableRepository, productRepository, waiterRepository, accountEntity, orderEntity);
+
+            Notifier notifier = new Notifier();
+
+            // SetMenu ----------------------------------------------------------------------------------------------
+            ProductPresentation product = productPresentation;
+            WaiterPresentation waiter = waiterPresentation;
+            TablePresentation table = tablePresentation;
             AccountPresentation account = accountPresentation;
 
+            // Add information --------------------------------------------------------------------------------------
+            Product product1 = new Product
+                (1, "Beer", "Drink", 20);
+            productRepository.Add(product1);
 
+            Waiter waiter1 = new Waiter
+                (1, "Gary", "12236548955", 49999885665, "Street: 123 Main Street; Neighborhood: Downtown");
+            waiterRepository.Add(waiter1);
+
+            Table table1 = new Table
+                (1, "Next to the window of front door");
+            tableRepository.Add(table1);
+
+            Order order1 = new Order (product1, 5);
+
+            Account account1 = new Account
+                (1, table1, waiter1, order1, "CLOSED", "05/05/2023");
+            accountRepository.Add(account1);
+
+            // Menus ------------------------------------------------------------------------------------------------                        
             bool proceedMain = true;
 
             while (proceedMain)
             {
                 Console.Clear();
 
-                PresentationBase.ColorfulMessage(
+                notifier.Menu(
                   $"\n\nGALERA'S BAR"
                 + $"\n-------------------"
                 + $"\n[1] Product. "
@@ -52,8 +69,7 @@ namespace BarControl.Application
                 + $"\n[3] Waiter."
                 + $"\n[4] Account."
                 + $"\n[5] Exit."
-                + "\n\n→ "
-                , ConsoleColor.DarkYellow);
+                + "\n\n→ ");
 
                 int selectedOption = Convert.ToInt32(Console.ReadLine());
 
@@ -64,7 +80,7 @@ namespace BarControl.Application
 
                         while (proceedProduct)
                         {
-                            int productOption = ProductPresentation.SetMenu("product");
+                            int productOption = product.SetMenu("product");
 
                             switch(productOption)
                             {
@@ -83,7 +99,7 @@ namespace BarControl.Application
 
                         while (proceedTable)
                         {
-                            int tableOption = TablePresentation.SetMenu("table");
+                            int tableOption = table.SetMenu("table");
 
                             switch (tableOption)
                             {
@@ -102,7 +118,7 @@ namespace BarControl.Application
 
                         while (proceedWaiter)
                         {
-                            int waiterOption = WaiterPresentation.SetMenu("waiter");
+                            int waiterOption = waiter.SetMenu("waiter");
 
                             switch (waiterOption)
                             {
@@ -122,19 +138,18 @@ namespace BarControl.Application
                         while (proceedAccount)
                         {
                             Console.Clear();
-                            
-                            PresentationBase.ColorfulMessage(
+
+                            notifier.Menu(
                               $"\n\nACCOUNT"
                             + $"\n-------------------"
                             + $"\n[1] Create account. "
                             + $"\n[2] View account's table."
-                            + $"\n[3] View just 'OPEN' accounts."
+                            + $"\n[3] View just \"OPEN\" accounts."
                             + $"\n[4] View day history and revenue."
                             + $"\n[5] Edit a account."
                             + $"\n[6] Delete a account."
                             + $"\n[7] Go back."
-                            + "\n\n→ "
-                            , ConsoleColor.DarkYellow);
+                            + "\n\n→ ");
 
                             int accountOption = Convert.ToInt32(Console.ReadLine());
 
@@ -152,14 +167,11 @@ namespace BarControl.Application
 
                         break;
 
-                    case 5: 
-                        proceedMain = false;
-
-                        break;
+                    case 5: proceedMain = false; break;
                 }
             }
-            PresentationBase.ColorfulMessage("\n\nHave a great day!", ConsoleColor.DarkCyan);
-            PresentationBase.ColorfulMessage("\n\n<-'", ConsoleColor.DarkCyan);
+            notifier.Text("\n\nHave a great day!");
+            notifier.Text("\n\n<-'");
 
             Console.ReadKey();
         }

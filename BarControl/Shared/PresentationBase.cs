@@ -1,29 +1,32 @@
-﻿using System.Collections;
+﻿using BarControl.Application;
+using System.Collections;
 
 namespace BarControl.Shared
 {
-    public abstract class PresentationBase
+    public abstract class PresentationBase<RepositoryType, EntityType> : ICRUD
+                          where RepositoryType : RepositoryBase<EntityType>
+                          where EntityType : EntityBase<EntityType>
     {
-        protected RepositoryBase repository = null;
-        protected EntityBase entity = null;
+        protected RepositoryType repository = null;
+        protected EntityType entity = null;
+        
+        public Notifier notifier = new Notifier();
 
         public string entityName;
+
         protected abstract void DisplayTable();
-        protected abstract EntityBase GetRecordProperties();
-
-        // Get user input -----------------------------------------------------------------
-
+        protected abstract EntityType GetRecordProperties();
         protected int GetInputId()
         {
             int id = 0;
             try
             {
-                ColorfulMessage("\nEnter the ID: \n\n-> ", ConsoleColor.Cyan);
+                notifier.Text("\nEnter the ID: \n\n-> ");
                 id = Convert.ToInt32(Console.ReadLine());
             }
             catch (FormatException)
             {
-                ColorfulMessage("\nThis is not a validy ID!\n", ConsoleColor.Red);
+                notifier.Error("\nThis is not a validy ID!\n");
                 SetFooter();
                 GetInputId();
                 return 0;
@@ -39,7 +42,7 @@ namespace BarControl.Shared
 
             SetHeader($"create new {entityName}");
 
-            EntityBase entity = GetRecordProperties();
+            EntityType entity = GetRecordProperties();
 
             ArrayList errorsList = entity.Errors();
 
@@ -47,7 +50,7 @@ namespace BarControl.Shared
             {
                 foreach (string error in errorsList)
                 {
-                    ColorfulMessage(error, ConsoleColor.Red);
+                    notifier.Error(error);
                     SetFooter();
                 }
 
@@ -56,7 +59,7 @@ namespace BarControl.Shared
             }
 
             repository.Add(entity);
-            ColorfulMessage($"\n{entityName} suscessfully created!", ConsoleColor.Green);
+            notifier.Success($"\n{entityName} suscessfully created!");
 
             SetFooter();
         }
@@ -68,7 +71,10 @@ namespace BarControl.Shared
             SetHeader($"view {entityName}'s table");
 
             if (repository.NoRecords())
+            {
+                SetFooter();
                 return;
+            }
 
             DisplayTable();
         }
@@ -80,16 +86,20 @@ namespace BarControl.Shared
             SetHeader($"update a {entityName}");
 
             if (repository.NoRecords())
+            {
+                SetFooter();
                 return;
+            }
 
             DisplayTable();
 
             int getId = GetInputId();
             int validId = repository.isValidId(getId);
 
-            EntityBase newRecord = GetRecordProperties();
+            EntityType newRecord = GetRecordProperties();
             repository.UpdateData(validId, newRecord);
-            ColorfulMessage($"\n{entityName} suscessfully updated!", ConsoleColor.Green);
+
+            notifier.Success($"\n{entityName} suscessfully updated!");
             SetFooter();
         }
 
@@ -100,7 +110,10 @@ namespace BarControl.Shared
             SetHeader($"Delete a {entityName}");
 
             if (repository.NoRecords())
+            {
+                SetFooter();
                 return;
+            }
 
             DisplayTable();
 
@@ -108,40 +121,32 @@ namespace BarControl.Shared
             int validId = repository.isValidId(getId);
 
             repository.Remove(validId);
-            ColorfulMessage($"\n{entityName} suscessfully deleted!", ConsoleColor.Green);
+            notifier.Success($"\n{entityName} suscessfully deleted!");
             SetFooter();
         }
 
-        // Presentation facilities --------------------------------------------------------
+        // Presentation facilities ---------------------------------------------------------
 
-        public static void ColorfulMessage(string message, ConsoleColor color)
-        {
-            Console.ForegroundColor = color;
-            Console.Write(message);
-            Console.ResetColor();
-        }
-
-        public static void SetHeader(string header)
+        public void SetHeader(string header)
         {
             Console.Clear();
 
-            ColorfulMessage(
+            notifier.Text(
               $"\n\n{header.ToUpper()}"
-            + "\n------------------------------\n"
-            , ConsoleColor.Cyan);
+            + "\n------------------------------\n");
         }
 
-        public static void SetFooter()
+        public void SetFooter()
         {
-            ColorfulMessage("\n\n<-'", ConsoleColor.Cyan);
+            notifier.Text("\n\n<-'");
             Console.ReadLine();
         }
 
-        public static int SetMenu(string entity)
+        public int SetMenu(string entity)
         {
             Console.Clear();
 
-            ColorfulMessage(
+            notifier.Menu(
               $"\n\n{entity.ToUpper()}"
             + $"\n-------------------"
             + $"\n[1] Create {entity}."
@@ -149,8 +154,7 @@ namespace BarControl.Shared
             + $"\n[3] Edit a {entity}."
             + $"\n[4] Delete a {entity}."
             + $"\n[5] Go back."
-            + "\n\n→ "
-            , ConsoleColor.DarkYellow);
+            + "\n\n→ ");
 
             int selectedOption = Convert.ToInt32(Console.ReadLine());
 
@@ -159,7 +163,7 @@ namespace BarControl.Shared
             return selectedOption;
         }
 
-        public static void SetTable(string[] columnNames, int[] columnWidths, List<object> data)
+        public void SetTable(string[] columnNames, int[] columnWidths, List<object> data)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
 
@@ -203,7 +207,7 @@ namespace BarControl.Shared
              */
         }
 
-        public static Type SetField<Type>(string message, ConsoleColor color)
+        public Type SetField<Type>(string message, ConsoleColor color)
         {
             Console.ForegroundColor = color;
             Console.Write($"\n{message}\n→ ");
@@ -218,7 +222,7 @@ namespace BarControl.Shared
             }
             catch (FormatException)
             {
-                ColorfulMessage($"\nInvalid input. Please enter a valid {typeof(Type).Name}.\n", ConsoleColor.Red);
+                this.notifier.Error($"\nInvalid input. Please enter a valid {typeof(Type).Name}.\n");
                 return SetField<Type>(message, color);
             }
         }

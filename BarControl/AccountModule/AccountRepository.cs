@@ -3,11 +3,11 @@ using System.Collections;
 
 namespace BarControl.AccountModule
 {
-    internal class AccountRepository : RepositoryBase
+    internal class AccountRepository : RepositoryBase<Account>
     {
-        public AccountRepository(ArrayList arrayList)
+        public AccountRepository(List<Account> accountList)
         {
-            records = arrayList;
+            records = accountList;
         }
 
         public static string GetStatus(int statusChoice)

@@ -5,15 +5,15 @@ using System.Collections;
 
 namespace BarControl.WaiterModule
 {
-    internal class WaiterPresentation : PresentationBase
+    internal class WaiterPresentation : PresentationBase<WaiterRepository, Waiter>
     {
-        public WaiterPresentation(WaiterRepository tableRepository)
+        public WaiterPresentation(WaiterRepository waiterRepository)
         {
-            repository = tableRepository;
+            repository = waiterRepository;
             entityName = "Waiter";
         }
 
-        protected override EntityBase GetRecordProperties()
+        protected override Waiter GetRecordProperties()
         {
             string name = SetField<string>("Name:", ConsoleColor.Cyan);
 
@@ -35,7 +35,7 @@ namespace BarControl.WaiterModule
 
             List<object> data = new List<object>();
 
-            ArrayList records = repository.GetRecords();
+            List<Waiter> records = repository.GetRecords();
 
             foreach (Waiter waiter in records)
             {

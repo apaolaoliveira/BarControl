@@ -3,11 +3,11 @@ using System.Collections;
 
 namespace BarControl.WaiterModule
 {
-    internal class WaiterRepository : RepositoryBase 
+    internal class WaiterRepository : RepositoryBase<Waiter> 
     {
-        public WaiterRepository(ArrayList arrayList)
+        public WaiterRepository(List<Waiter> waiterList)
         {
-            records = arrayList;
+            records = waiterList;
         }
     }
 }

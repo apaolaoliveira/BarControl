@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace BarControl.TableModule
 {
-    internal class TablePresentation : PresentationBase
+    internal class TablePresentation : PresentationBase<TableRepository, Table>
     {
         public TablePresentation(TableRepository tableRepository)
         {
@@ -12,7 +12,7 @@ namespace BarControl.TableModule
             entityName = "Table";
         }
 
-        protected override EntityBase GetRecordProperties()
+        protected override Table GetRecordProperties()
         {
             string description = SetField<string>("Description:", ConsoleColor.Cyan);
 
@@ -28,7 +28,7 @@ namespace BarControl.TableModule
 
             List<object> data = new List<object>();
 
-            ArrayList records = repository.GetRecords();
+            List<Table> records = repository.GetRecords();
 
             foreach (Table table in records)
             {

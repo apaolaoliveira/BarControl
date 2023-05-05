@@ -3,11 +3,11 @@ using System.Collections;
 
 namespace BarControl.ProductModule
 {
-    internal class ProductRepository : RepositoryBase 
+    internal class ProductRepository : RepositoryBase<Product>
     {
-        public ProductRepository(ArrayList arrayList)
+        public ProductRepository(List<Product> productList)
         {
-            records = arrayList;
+            records = productList;
         }
     }
 }

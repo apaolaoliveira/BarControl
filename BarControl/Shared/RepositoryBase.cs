@@ -1,12 +1,13 @@
-﻿using System.Collections;
+﻿using BarControl.Application;
 
 namespace BarControl.Shared
 {
-    public abstract class RepositoryBase
+    public abstract class RepositoryBase<EntityType> 
+                          where EntityType : EntityBase<EntityType>
     {
-        protected ArrayList records;
+        protected List<EntityType> records;
 
-        public ArrayList GetRecords()
+        public List<EntityType> GetRecords()
         {
             return records;
         }
@@ -18,34 +19,36 @@ namespace BarControl.Shared
             idCounter++;
         }
 
+        public Notifier notifier = new Notifier();
+
         // CRUD --------------------------------------------------------------------
 
-        public void Add(EntityBase entity)
+        public void Add(EntityType entity)
         {
             records.Add(entity);
             entity.id = idCounter;
             IncreaseId();
         }
 
-        public void UpdateData(int id, EntityBase entityEdit)
+        public void UpdateData(int id, EntityType entityEdit)
         {
-            EntityBase entityUpdate = GetSelectedId(id);
+            EntityType entityUpdate = GetSelectedId(id);
             entityUpdate.UpdateData(entityEdit);
         }
 
         public void Remove(int selectedId)
         {
-            EntityBase entity = GetSelectedId(selectedId);
+            EntityType entity = GetSelectedId(selectedId);
             records.Remove(entity);
         }
 
         // Repository facilities ---------------------------------------------------
 
-        public virtual EntityBase GetSelectedId(int selectedId)
+        public virtual EntityType GetSelectedId(int selectedId)
         {
-            EntityBase entity = null;
+            EntityType entity = null;
 
-            foreach (EntityBase entityAdded in records)
+            foreach (EntityType entityAdded in records)
             {
                 if (entityAdded.id == selectedId)
                 {
@@ -60,14 +63,9 @@ namespace BarControl.Shared
         {
             do
             {
-                if (selectedId > 0 && selectedId < idCounter - 1)
+                if (selectedId <= 0 || selectedId > idCounter - 1)
                 {
-                    break;
-                }
-
-                else if (selectedId <= 0 || selectedId > idCounter - 1)
-                {
-                    PresentationBase.ColorfulMessage("\nThis ID doesn't exist. Try again:" + "\n→ ", ConsoleColor.Red);
+                    notifier.Error("\nThis ID doesn't exist. Try again:" + "\n→ ");
                     selectedId = Convert.ToInt32(Console.ReadLine());
                 }
 
@@ -82,8 +80,7 @@ namespace BarControl.Shared
         {
             if (records.Count == 0)
             {
-                PresentationBase.ColorfulMessage("\nNo records found.", ConsoleColor.Red);
-                PresentationBase.SetFooter();
+                notifier.Error("\nNo records found.");
                 return true;
             }
             else { return false; }

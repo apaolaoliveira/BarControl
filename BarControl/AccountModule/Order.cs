@@ -1,7 +1,4 @@
 ﻿using BarControl.ProductModule;
-using BarControl.Shared;
-using System.Collections;
-using System.Data.Common;
 
 namespace BarControl.AccountModule
 {

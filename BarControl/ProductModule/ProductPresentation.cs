@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace BarControl.ProductModule
 {
-    internal class ProductPresentation : PresentationBase
+    internal class ProductPresentation : PresentationBase<ProductRepository, Product>
     {
         public ProductPresentation(ProductRepository ProductRepository)
         {
@@ -11,7 +11,7 @@ namespace BarControl.ProductModule
             entityName = "Product";
         }
 
-        protected override EntityBase GetRecordProperties()
+        protected override Product GetRecordProperties()
         {
             string name = SetField<string>("Name:", ConsoleColor.Cyan);
 
@@ -31,7 +31,7 @@ namespace BarControl.ProductModule
 
             List<object> data = new List<object>();
 
-            ArrayList records = repository.GetRecords();
+            List<Product> records = repository.GetRecords();
 
             foreach (Product product in records)
             {
