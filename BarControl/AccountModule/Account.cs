@@ -1,7 +1,5 @@
 ﻿using BarControl.TableModule;
 using BarControl.WaiterModule;
-using BarControl.Shared;
-using System.Collections;
 
 namespace BarControl.AccountModule
 {

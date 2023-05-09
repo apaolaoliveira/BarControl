@@ -1,6 +1,4 @@
-﻿using BarControl.Shared;
-using System.Collections;
-
+﻿
 namespace BarControl.WaiterModule
 {
     internal class Waiter : EntityBase<Waiter>

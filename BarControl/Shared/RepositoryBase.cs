@@ -1,5 +1,4 @@
-﻿using BarControl.Application;
-
+﻿
 namespace BarControl.Shared
 {
     public abstract class RepositoryBase<EntityType> 
@@ -44,20 +43,7 @@ namespace BarControl.Shared
 
         // Repository facilities ---------------------------------------------------
 
-        public virtual EntityType GetSelectedId(int selectedId)
-        {
-            EntityType entity = null;
-
-            foreach (EntityType entityAdded in records)
-            {
-                if (entityAdded.id == selectedId)
-                {
-                    entity = entityAdded;
-                    break;
-                }
-            }
-            return entity;
-        }
+        public virtual EntityType GetSelectedId(int selectedId) => records.Find(records => records.id == selectedId); //Lambda
 
         public virtual int isValidId(int selectedId)
         {

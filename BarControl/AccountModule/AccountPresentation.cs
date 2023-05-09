@@ -1,8 +1,6 @@
 ﻿using BarControl.ProductModule;
-using BarControl.Shared;
 using BarControl.TableModule;
 using BarControl.WaiterModule;
-using System.Security.Principal;
 
 namespace BarControl.AccountModule
 {

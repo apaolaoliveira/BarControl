@@ -1,6 +1,4 @@
-﻿using BarControl.Application;
-using System.Collections;
-
+﻿
 namespace BarControl.Shared
 {
     public abstract class PresentationBase<RepositoryType, EntityType> : ICRUD

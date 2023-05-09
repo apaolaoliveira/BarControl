@@ -1,6 +1,4 @@
 ﻿using BarControl.ProductModule;
-using BarControl.Shared;
-using System.Collections;
 
 namespace BarControl.TableModule
 {
