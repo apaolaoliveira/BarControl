@@ -24,3 +24,4 @@ With features such as order recording and daily revenue reports, the system prov
 <br>
 <br> One potential improvement for the program would be to add a database to store customer information, such as their orders and payment records, for future reference. This could enhance the program's functionality and allow for better organization of data.
 
+>Made by Paola Oliveira.
