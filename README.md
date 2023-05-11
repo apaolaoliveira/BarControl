@@ -22,6 +22,6 @@ The application was all developed using C# at Visual Studio.
 "BarControl" provides an efficient way to control the financial issues of the establishment, allowing for better organization and productivity. 
 With features such as order recording and daily revenue reports, the system provides easy access to crucial information, making it an ideal solution for the Galera's bar team.
 <br>
-<br> One potential improvement for the program would be to add a database to store customer information, such as their orders and payment records, for future reference. This could enhance the program's functionality and allow for better organization of data.
+<br> One potential improvement for the program would be to add a database to store customer information, such as their orders and products, for future reference. This could enhance the program's functionality and allow for better organization of data.
 
 >Made by Paola Oliveira.
