@@ -8,14 +8,19 @@ namespace BarControl.AccountModule
             records = accountList;
         }
 
-        public static string GetStatus(int statusChoice)
+        public decimal CalculateTodayPrice()
         {
-            switch (statusChoice)
+            decimal totalDayPrice = 0;
+
+            foreach (Account account in records)
             {
-                case 1: return "OPEN";
-                case 2: return "CLOSED";
-                default: throw new ArgumentException("Invalid status choice.");
+                if(account.TodayDate == DateTime.Now.Date)
+                {
+                    totalDayPrice += account.SumTotalOrders();
+                }
             }
+
+            return totalDayPrice;
         }
     }
 }

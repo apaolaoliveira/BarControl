@@ -35,10 +35,13 @@ namespace BarControl.Shared
             entityUpdate.UpdateData(entityEdit);
         }
 
+        ArrayList removedIds = new ArrayList();
+
         public void Remove(int selectedId)
         {
             EntityType entity = GetSelectedId(selectedId);
             records.Remove(entity);
+            removedIds.Add(selectedId);
         }
 
         // Repository facilities ---------------------------------------------------
@@ -46,10 +49,10 @@ namespace BarControl.Shared
         public virtual EntityType GetSelectedId(int selectedId) => records.Find(records => records.id == selectedId); //Lambda
 
         public virtual int isValidId(int selectedId)
-        {
+        { 
             do
             {
-                if (selectedId <= 0 || selectedId > idCounter - 1)
+                if (selectedId <= 0 || selectedId > idCounter - 1 || removedIds.Contains(selectedId))
                 {
                     notifier.Error("\nThis ID doesn't exist. Try again:" + "\n→ ");
                     selectedId = Convert.ToInt32(Console.ReadLine());

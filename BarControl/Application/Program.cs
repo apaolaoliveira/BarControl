@@ -6,11 +6,11 @@ using BarControl.TableModule;
 namespace BarControl.Application
 {
     internal class Program
-    {
+    { 
         static void Main(string[] args)
         {
             // Object initialization --------------------------------------------------------------------------------
-            ProductRepository productRepository   = new ProductRepository(new List<Product>());
+            ProductRepository   productRepository   = new ProductRepository(new List<Product>());
             ProductPresentation productPresentation = new ProductPresentation(productRepository);
 
             WaiterRepository   waiterRepository   = new WaiterRepository(new List<Waiter>());
@@ -22,7 +22,7 @@ namespace BarControl.Application
             Order orderEntity = new Order();
 
             AccountRepository accountRepository = new AccountRepository(new List<Account>());
-            Account accountEntity = new Account(accountRepository, orderEntity);
+            Account accountEntity = new Account();
             AccountPresentation accountPresentation = new AccountPresentation
             (accountRepository, tablePresentation, productPresentation, waiterPresentation,
              tableRepository, productRepository, waiterRepository, accountEntity, orderEntity);
@@ -46,13 +46,15 @@ namespace BarControl.Application
 
             Table table1 = new Table
                 (1, "Next to the window of front door");
-            tableRepository.Add(table1);
-
-            Order order1 = new Order (product1, 5);
+            tableRepository.Add(table1);            
 
             Account account1 = new Account
-                (1, table1, waiter1, order1, "CLOSED", "05/05/2023");
+                (1, table1, waiter1);
+            account1.Status = "CLOSED";
             accountRepository.Add(account1);
+
+            Order order1 = new Order(product1, 5);
+            account1.ordersList.Add(order1);
 
             // Menus ------------------------------------------------------------------------------------------------                        
             bool proceedMain = true;
@@ -143,25 +145,31 @@ namespace BarControl.Application
                               $"\n\nACCOUNT"
                             + $"\n-------------------"
                             + $"\n[1] Create account. "
-                            + $"\n[2] View account's table."
-                            + $"\n[3] View just \"OPEN\" accounts."
-                            + $"\n[4] View day history and revenue."
-                            + $"\n[5] Edit a account."
-                            + $"\n[6] Delete a account."
-                            + $"\n[7] Go back."
+                            + $"\n[2] Close account. "
+                            + $"\n[3] Add an order to account. "
+                            + $"\n[4] View account's table."
+                            + $"\n[5] View order's table."
+                            + $"\n[6] View just \"OPEN\" accounts."
+                            + $"\n[7] View today's revenue."
+                            + $"\n[8] Edit a account."
+                            + $"\n[9] Delete a account."
+                            + $"\n[10] Go back."
                             + "\n\n→ ");
 
                             int accountOption = Convert.ToInt32(Console.ReadLine());
 
                             switch (accountOption)
                             {
-                                case 1: account.Create();               break;
-                                case 2: account.Read();                 break;
-                                case 3: accountPresentation.OpenView(); break;
-                                case 4: accountPresentation.Revenue();  break;
-                                case 5: account.Update();               break;
-                                case 6: account.Delete();               break;
-                                case 7: proceedAccount = false;         break;
+                                case 1:  account.Create();                   break;
+                                case 2:  accountPresentation.CloseAccount(); break;
+                                case 3:  accountPresentation.AddOrder();     break;
+                                case 4:  account.Read();                     break;
+                                case 5:  accountPresentation.OrderView();    break;
+                                case 6:  accountPresentation.OpenView();     break;
+                                case 7:  accountPresentation.Revenue();      break;
+                                case 8:  account.Update();                   break;
+                                case 9:  account.Delete();                   break;
+                                case 10: proceedAccount = false;             break;
                             }
                         }
 
@@ -170,6 +178,7 @@ namespace BarControl.Application
                     case 5: proceedMain = false; break;
                 }
             }
+            Console.Clear();
             notifier.Text("\n\nHave a great day!");
             notifier.Text("\n\n<-'");
 

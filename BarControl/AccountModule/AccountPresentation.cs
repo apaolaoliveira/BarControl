@@ -1,6 +1,7 @@
 ﻿using BarControl.ProductModule;
 using BarControl.TableModule;
 using BarControl.WaiterModule;
+using System.Security.Principal;
 
 namespace BarControl.AccountModule
 {
@@ -38,20 +39,22 @@ namespace BarControl.AccountModule
             this.waiterRepository = waiterRepository;
         }
 
+        public void CloseAccount()
+        {
+            SetHeader("Close account");
+
+            int accountId = SetField<int>("Account ID:", ConsoleColor.Cyan);
+
+            Account account = repository.GetSelectedId(accountId);
+
+            account.Status = "CLOSED";
+
+            notifier.Success("\nAccount's status suscessfuly changed!");
+            SetFooter();
+        }
+
         protected override Account GetRecordProperties()
         {
-            // Status and Date ---------------------------------------------------
-
-            int statusInput = SetField<int>(
-                  "Status:"
-                + "\n[1] OPEN"
-                + "\n[2] CLOSED\n"
-                , ConsoleColor.Cyan);
-
-            string status = AccountRepository.GetStatus(statusInput);
-
-            string dateTime = DateTime.Today.Date.ToString("dd/MM/yyyy");
-
             // Table -------------------------------------------------------------
 
             tablePresentation.Read();
@@ -70,8 +73,24 @@ namespace BarControl.AccountModule
 
             Waiter waiter = waiterRepository.GetSelectedId(validWaiter);
 
-            // Order --------------------------------------------------------------
+            Account newAccount = new Account(repository.idCounter, table, waiter);
+            return newAccount;
+        }
 
+        public void AddOrder()
+        {
+            SetHeader("add order");
+
+            if (repository.NoRecords())
+            {
+                SetFooter();
+                return;
+            }
+
+            int accountId = SetField<int>("Account ID:", ConsoleColor.Cyan);
+            int validAccount = repository.isValidId(accountId);
+
+            Account account = repository.GetSelectedId(validAccount);
             productPresentation.Read();
 
             int productInput = SetField<int>("\nProduct ID:", ConsoleColor.Cyan);
@@ -83,31 +102,56 @@ namespace BarControl.AccountModule
 
             Order newOrder = new Order(product, quantityInput);
             newOrder.CalculatePrice(quantityInput, product.Price);
-
-            Account newAccount = new Account(repository.idCounter, table, waiter, newOrder, status, dateTime);
-
-            return newAccount;
+            account.ordersList.Add(newOrder);
         }
 
         protected override void DisplayTable()
         {
             SetHeader("accounts' view");
 
-            string[] columnNames = { "id", "Table", "waiter", "product", "quantity", "price", "status", "date" };
-            int[] columnWidths = { 4, 8, 15, 15, 9, 11, 10, 12 };
+            string[] columnNamesAccount = { "id", "Table", "waiter", "status", "date" };
+            int[] columnWidthsAccount = { 4, 8, 15, 10, 12 };
 
-            List<object> data = new List<object>();
+            List<object> dataAccount = new List<object>();
 
             List<Account> records = repository.GetRecords();
 
             foreach (Account account in records)
             {
-                data.Add(new object[] { account.id, account.Table.id, account.Waiter.Name, account.Order.Product.Name,account.Order.Quantity,
-                orderEntity.CalculatePrice(account.Order.Quantity, account.Order.Product.Price).ToString("C2"), account.Status, account.TodayDate  });
+                dataAccount.Add(new object[] { account.id, account.Table.id, account.Waiter.Name, account.Status, account.TodayDate.ToString("dd/MM/yyyy") });
             }
 
-            SetTable(columnNames, columnWidths, data);
+            SetTable(columnNamesAccount, columnWidthsAccount, dataAccount);
+            SetFooter();
+        }
 
+        public void OrderView()
+        {
+            SetHeader("orders' view");
+
+            if (repository.NoRecords())
+            {
+                SetFooter();
+                return;
+            }
+
+            int accountId = SetField<int>("Account ID:", ConsoleColor.Cyan);
+            int validAccount = repository.isValidId(accountId);
+
+            Account account = repository.GetSelectedId(validAccount);
+
+            string[] columnNamesOrder = { "id", "product", "quantity", "price" };
+            int[] columnWidthsOrder = { 4, 15, 9, 11 };
+
+            List<object> dataOrder = new List<object>();
+
+            foreach (Order order in account.ordersList)
+            {
+                dataOrder.Add(new object[] { account.id, order.Product.Name, order.Quantity,
+                     orderEntity.CalculatePrice(order.Quantity, order.Product.Price).ToString("C2") });
+            }
+
+            SetTable(columnNamesOrder, columnWidthsOrder, dataOrder);
             SetFooter();
         }
 
@@ -115,8 +159,14 @@ namespace BarControl.AccountModule
         {
             SetHeader("\"Open\" accounts' view");
 
-            string[] columnNames = { "id", "Table", "waiter", "product", "quantity", "price", "status", "date" };
-            int[] columnWidths = { 4, 8, 15, 15, 9, 9, 10, 12 };
+            if (repository.NoRecords())
+            {
+                SetFooter();
+                return;
+            }
+
+            string[] columnNames = { "id", "Table", "waiter", "status", "date" };
+            int[] columnWidths = { 4, 8, 15, 10, 12 };
 
             List<object> data = new List<object>();
 
@@ -127,12 +177,11 @@ namespace BarControl.AccountModule
             if (noRecords == false)
             {
                 foreach (Account account in records)
-                {                
+                {
                     if (account != null && account.Status == "OPEN")
                     {
-                        data.Add(new object[] { account.id, account.Table.id, account.Waiter.Name, account.Order.Product.Name,account.Order.Quantity,
-                        orderEntity.CalculatePrice(account.Order.Quantity, account.Order.Product.Price).ToString("C2"), account.Status, account.TodayDate  });
-                    }                 
+                        data.Add(new object[] { account.id, account.Table.id, account.Waiter.Name, account.Status, account.TodayDate.ToString("dd/MM/yyyy") });
+                    }
                 }
             }
             else
@@ -149,27 +198,18 @@ namespace BarControl.AccountModule
 
         public void Revenue()
         {
-            SetHeader("history and revenue");
+            SetHeader("revenue");
 
-            List<Account> SetHistory = repository.GetRecords();
-
-            string[] columnNames = { "id", "product", "quantity", "final price" };
-            int[] columnWidths = { 4, 15, 9, 12 };
-
-            List<object> data = new List<object>();
-
-            foreach (Account account in SetHistory)
+            if (repository.NoRecords())
             {
-                data.Add(new object[] { account.id, account.Order.Product.Name, account.Order.Quantity,
-                    orderEntity.CalculatePrice(account.Order.Quantity, account.Order.Product.Price).ToString("C2") });
+                SetFooter();
+                return;
             }
 
-            decimal totalDayPrice = entity.CalculateTotalPrice();
+            decimal totalDayPrice = repository.CalculateTodayPrice();
 
-            SetTable(columnNames, columnWidths, data);
-
-            notifier.Success($"\nTotal Amount: +{totalDayPrice.ToString("C2")} "
-                            + $"\nDate:{DateTime.Today.Date.ToString("dd/MM/yyyy")}");
+            notifier.Success($"\nTotal Amount: +{totalDayPrice.ToString("C2")}. "
+                            + $"\nDate: {DateTime.Today.Date.ToString("dd/MM/yyyy")}.");
 
             SetFooter();
         }
